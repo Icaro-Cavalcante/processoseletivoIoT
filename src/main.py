@@ -113,8 +113,9 @@ def loop_principal():
 # Inicialização
 setup()
 
+print("Teste")
+
 # Loop principal
 while True:
     loop_principal()
     time.sleep_ms(50)  # pequena pausa para evitar sobrecarga
-    
