@@ -117,3 +117,4 @@ setup()
 while True:
     loop_principal()
     time.sleep_ms(50)  # pequena pausa para evitar sobrecarga
+    
