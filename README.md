@@ -1,331 +1,59 @@
-# Processo Seletivo – Intensivo Maker | IoT
-## Etapa Prática – Sistemas Embarcados
+# 🎛️ Projeto de IoT - Processo Seletivo PNAAT
 
-Bem-vindo(a) à **etapa prática do processo seletivo para o Intensivo Maker | IoT**.
+**Nome:** Icaro Cavalcante de Carvalho Pinheiro  
+**E-mail:** icarodev06@gmail.com  
+**Data da entrega:** 26/04/2026
 
-Esta atividade tem como objetivo avaliar suas competências em **Sistemas Embarcados**, com foco em **organização de projeto, lógica de firmware e simulação de hardware**, a partir da aplicação prática dos conhecimentos adquiridos nos cursos EAD da etapa anterior.
+## 📚 Resumo do Projeto
 
-> 🎯 **Objetivo principal**  
-> Avaliar sua capacidade de **planejar, estruturar e desenvolver** uma solução funcional de sistemas embarcados, seguindo boas práticas de engenharia.
+> O objetivo deste projeto é desenvolver um sistema de controle de tráfego (semáforo) inteligente e interativo, demonstrando os conhecimentos em sistemas embarcados com MicroPython. O sistema embarcado simula o funcionamento de um cruzamento, controlando o fluxo de veículos com um ciclo de Verde -> Amarelo -> Vermelho, e prioriza a travessia de pedestres por meio de um botão de solicitação. Ele oferece um ciclo normal para carros, que se repete indefinidamente. Quando um pedestre deseja atravessar, ele pode apertar um botão e o sistema sinaliza, aguardando o ciclo atual terminar, exibindo um sinal específico (LED verde) para a travessia com segurança. Essa é a principal interação do usuário com o sistema simulado.
 
----
+## 🏗️ Arquitetura do Sistema Embarcado
+A lógica do sistema se baseia em uma máquina de estados finitos (Finite State Machine - FSM) implementada no main.py. O programa alterna entre os estados "VERDE", "AMARELO" e "VERMELHO" de acordo com temporizadores e um pedido externo (botão).
 
-## 🏁 Passo 0 – Antes de Tudo
+O fluxo do programa é estruturado em um loop principal, onde o estado atual controla as ações sobre os componentes de hardware (LEDs). O diagrama pode ser visualizado no diagrama abaixo:
 
-Se você **nunca utilizou Git ou GitHub**, não se preocupe.  
-Siga atentamente os passos abaixo — eles fazem parte do processo de aprendizagem esperado.
+<img width="1468" height="724" alt="image" src="https://github.com/user-attachments/assets/1cfd7c5b-caf4-4c7b-88cf-f2d343f12758" />
 
----
 
-### 1️⃣ Criação de Conta no GitHub
+## 🧑‍💻 Como funciona
+Ao iniciar, o sistema executa a função setup() e configura todos os LEDs, além de inicializar o temporizador time.ticks_ms(). Uma decisão de projeto importante foi o uso da comunicação serial como uma ferramenta de interface homem-máquina. As ações do sistema são exibidas no console com print(), mostrando a mudança de estado (🟢 Verde - Siga), o pedido de travessia e a contagem regressiva, permitindo o acompanhamento das ações do semáforo. A resposta do CI confirma que a mensagem '🚦 Semáforo iniciado. Modo NORMAL.' foi exibida corretamente, validando essa comunicação.
 
-1. Acesse: https://github.com  
-2. Clique em **Sign up**  
-3. Crie sua conta gratuita seguindo as instruções da plataforma  
+## 💡 Componentes Utilizados na Simulação
+Os seguintes componentes foram definidos no arquivo `diagram.json` para compor o circuito virtual da simulação：
 
-> 📌 O GitHub será utilizado para:
-> - Envio do seu projeto  
-> - Versionamento do código  
-> - Correção e validação automática via GitHub Actions  
+*   **Placa Microcontroladora:** `board-esp32-devkit-c-v4`, que serve como o cérebro do sistema.
+*   **LEDs (Saídas Visuais):** Quatro LEDs são usados para sinalização: o LED Vermelho (GPIO 32), o LED Amarelo (GPIO 33), o LED Verde (GPIO 25) para os carros, e um LED Verde adicional (GPIO 26) para pedestres.
+*   **Botão (Entrada de Usuário):** Um botão de pressão (`wokwi-pushbutton`), conectado ao pino GPIO 27 com uma configuração de pull-up interno. Quando pressionado, ele sinaliza um pedido de travessia.
+*   **Resistores:** Quatro resistores de 220Ω (GPIOs identificados por `r_red`, `r_yellow`, `r_green`, `r_ped`) são usados para limitar a corrente que passa por cada LED, prevenindo danos.
+*   **Monitor Serial:** O componente `$serialMonitor` é utilizado para exibir as mensagens de status do sistema.
 
----
+## 🧰 Decisões Técnicas Relevantes
+A implementação do código `main.py` reflete as seguintes decisões técnicas:
 
-### 2️⃣ Instalação do Git
+*   **Organização do Código:** O código foi estruturado com funções dedicadas para cada tarefa (`setup()`, `verificar_botao()`, `piscar_led_vermelho()` e `loop_principal()`). Essa modularização facilita a leitura, manutenção e depuração.
+*   **Uso de Máquina de Estados:** A escolha por uma *FSM* em vez de uma sequência linear de `time.sleep()` evita o bloqueio do sistema. Enquanto o semáforo está no estado `"VERDE"`, o programa continua verificando o botão (`verificar_botao()`) em paralelo, garantindo que um pedido de pedestre seja detectado a qualquer momento.
+*   **Temporização Assíncrona:** A função usou `time.ticks_ms()` e `time.ticks_diff()` para controlar a duração de cada estado de forma não-bloqueante, ao invés de `time.sleep()`. Essa abordagem evita travar completamente o programa enquanto ele aguarda uma mudança de estado, sendo uma prática comum em sistemas embarcados para manter a responsividade.
+*   **Tratamento do Botão (Debounce):** Foi implementada uma lógica de *debounce* simples com `time.sleep_ms(50)` na função `verificar_botao()`. Isso elimina leituras falsas causadas pelo ruído mecânico do botão, garantindo que um único toque seja registrado uma única vez.
 
-O **Git** é a ferramenta responsável pelo controle de versões do seu código.
+## 📊 Resultados Obtidos
+O sistema final atendeu aos requisitos propostos. O funcionamento correto foi validado localmente na plataforma **Wokwi** e, crucialmente, por meio do **GitHub Actions**. O sistema imprime no console a mensagem `'🚦 Semáforo iniciado. Modo NORMAL.'`, que foi configurada como critério de sucesso no CI. O log de execução mostra:
 
-### Windows
-Baixe e instale o **Git Bash**:  
-https://git-scm.com/downloads
+*   `🚦 Semáforo iniciado. Modo NORMAL.`
+*   `Verde para carros por 10 segundos.`
+*   `Teste`
 
-### Linux / macOS
-Verifique se o Git já está instalado:
+Com base nesses resultados, o sistema **funciona corretamente** dentro do simulador.
 
-```bash
-git --version
-```
-> Caso não esteja, instale pelo gerenciador de pacotes do seu sistema.
+Todos os requisitos descritos foram atendidos conforme o esperado. O comportamento observado na simulação do Wokwi demonstrou que o sistema executa o ciclo de um semáforo real e gerencia corretamente a interação com o usuário, um passo fundamental para a integração em um sistema maior.
 
-## ⚙ Passo 1 – Preparando o Ambiente
+## 🗣️ Comentários Adicionais
+Durante o desenvolvimento, um dos maiores desafios foi configurar o ambiente de integração contínua (CI) para que o GitHub Actions validasse a simulação do Wokwi sem erros relacionados ao firmware (arquivos .bin). Superar essas dificuldades técnicas exigiu pesquisa (uso do vfs-merge) e testes, mas no final, a configuração aprovada no CI demonstra sua robustez.
 
-Para desenvolver o desafio, você deverá criar uma cópia deste repositório no seu GitHub.
+Com mais tempo, futuras melhorias seriam implementar uma lógica de controle mais abrangente com múltiplos botões e semáforos para veículos em direções opostas, e exibir o status do sistema em um display de LCD ou OLED para uma interface mais rica.
 
-### 1️⃣ Fork do Repositório
-No canto superior direito desta página, clique em Fork
+Este projeto consolidou os aprendizados em MicroPython, máquinas de estado e integração de hardware simulado com CI, habilidades fundamentais para o desenvolvimento de produtos robustos em IoT.
 
-<img width="219" height="45" alt="image" src="https://github.com/user-attachments/assets/5d629626-513a-445c-ba0f-e5bb3e225187" />
 
-
-Uma cópia do repositório será criada no seu perfil do GitHub
-
-> 🔎 O Fork permite que você trabalhe de forma independente, sem alterar o repositório original do processo seletivo.
-
-### 2️⃣ Clone do Repositório
-
-No repositório do seu Fork, clique em **<> Code**
-
-<img width="149" height="52" alt="image" src="https://github.com/user-attachments/assets/abbd331b-a005-4633-89c6-afd16acbe828" />
-
-Copie a URL e execute no terminal:
-
-```bash
-git clone https://github.com/SEU_USUARIO/nome-do-repositorio.git
-cd nome-do-repositorio
-```
-
-> O comando git clone cria uma cópia local do repositório para desenvolvimento.
-
-### 3️⃣ Preparação do Ambiente de Execução
-
-Você pode executar o projeto de duas formas. Escolha apenas uma.
-
-#### 🔹 Opção A – Ambiente Python Local
-
-**Requisitos:**
-
-- Python 3.10 ou 3.11
-- pip
-
-**Instale as dependências:**
-
-```bash
-pip install -r requirements.txt
-```
-
-#### 🔹 Opção B – Dev Container (Recomendado)
-
-Este repositório inclui um Dev Container, garantindo um ambiente padronizado.
-
-**Requisitos:**
-
-- VS Code
-- Docker instalado
-- Extensão Dev Containers
-
-**Passos:**
-
-1. Abra o repositório no VS Code
-2. Clique em “Reopen in Container”
-3. Aguarde a criação automática do ambiente
-
-> ➡️ Todas as dependências serão instaladas automaticamente.
-
-## 🔐 Passo 2 – Criando sua API Key do Wokwi
-
-A simulação do projeto será executada automaticamente via GitHub Actions, utilizando o Wokwi CLI.
-
-Para isso, você precisa gerar uma API Key.
-
-1. Acesse: https://wokwi.com/dashboard/ci
-2. Faça login (Google ou GitHub)
-3. Clique em Generate API Token
-4. Copie a chave gerada (exemplo: wokwi-xxxxxxxx)
-
->⚠️ Importante
-- Nunca faça commit dessa chave
-- Ela deve ser armazenada apenas como secret no GitHub
-
-## 🔒 Passo 3 – Configurando a API Key no GitHub (Secrets)
-
-**No repositório do seu Fork:**
-
-1. Vá em Settings
-2. Acesse Secrets and variables → Actions
-3. Clique em New repository secret
-4. Nome: WOKWI_API_KEY
-5. Valor: sua chave gerada
-6. Salve
-
-> ✔️ As GitHub Actions do template já estão preparadas para usar essa variável automaticamente.
-
-## 🧠 Passo 4 – Desafio Técnico
-
-Você deverá desenvolver um projeto de sistemas embarcados simulados, utilizando Python e Wokwi.
-
-### 📁 Estrutura mínima esperada
-
-```text
-/project
- ├── src/
- │   └── main.py        # Código principal do projeto
- ├── wokwi.toml         # Configuração da simulação
- ├── diagram.json       # Circuito no Wokwi
- └── README.md          # Explicação do seu projeto
-```
-
-> Você pode expandir essa estrutura se desejar, desde que mantenha os arquivos essenciais.
-
-### 🛠 Como Desenvolver seu Projeto
-
-O desenvolvimento acontece principalmente nos arquivos abaixo:
-
-#### 1️⃣ src/main.py
-
-- Código Python executado na simulação
-- Implementa a lógica do sistema embarcado
-- Exemplos: controle de LEDs, leitura de sensores, estados, temporizações, etc.
-
-#### 2️⃣ diagram.json
-
-- Define o hardware virtual do projeto
-- Componentes como:
-  - LEDs
-  - Botões
-  - Sensores
-  - Placa microcontroladora
-
-#### 3️⃣ wokwi.toml
-
-- Configura a simulação:
-  - Tipo de placa
-  - Framework
-  - Dependências adicionais
-
-#### 4️⃣ Commit e Push
-
-Após suas alterações:
-
-```bash
-git add .
-git commit -m "Descrição clara do que foi feito"
-git push
-```
-### ⚙ Execução Automática (GitHub Actions)
-
-A cada push, o GitHub Actions irá automaticamente:
-
-- Executar o pipeline de build
-- Rodar a simulação via Wokwi CLI
-- Validar que o projeto executa sem erros
-
-### 📌 Caso algo falhe:
-
-- Vá até a aba Actions
-- Analise os logs da execução
-- Corrija e envie novamente
-
-## 📊 Critérios de Avaliação
-
-Esta etapa será avaliada considerando:
-
-- Funcionamento correto da simulação
-- Código organizado e legível
-- Estrutura de arquivos correta
-- Uso adequado do Wokwi
-- Commits claros e bem descritos
-- Projeto executando sem falhas nas Actions
-
----
-
-## 📎 Submissão Final
-
-Após concluir o desenvolvimento:
-
-1. Verifique se o projeto **executa sem erros** nas GitHub Actions  
-2. Confirme que todos os arquivos obrigatórios estão presentes  
-3. Copie o link do **seu repositório no GitHub**
-
-📤 Envie o link conforme as orientações do processo seletivo na plataforma **Moodle**.
-
----
-
-## 📝 Relatório do Candidato
-
-O arquivo **`README.md` do seu repositório** deve ser utilizado como o  
-**relatório final do desafio técnico**.
-
-Preencha todas as seções abaixo de forma **clara, objetiva e técnica**.
-
-> 💡 **Dica importante**  
-> Não é necessário um relatório extenso.  
-> O principal critério é demonstrar **clareza nas decisões técnicas**, organização e entendimento do sistema embarcado desenvolvido.
-
----
-
-### 👤 Identificação do Candidato
-
-- **Nome completo:**  
-- **GitHub:**  
-
----
-
-## 1️⃣ Visão Geral da Solução
-
-Descreva, em poucas palavras:
-
-- Qual é o objetivo do seu projeto  
-- O que o sistema embarcado simulado faz  
-- Como o usuário interage com ele (se aplicável)
-
----
-
-## 2️⃣ Arquitetura do Sistema Embarcado
-
-Explique a arquitetura lógica do seu projeto, abordando:
-
-- Fluxo principal do programa (`main.py`)  
-- Estrutura de estados, loops ou temporizações  
-- Como os componentes interagem entre si  
-
-Se desejar, utilize tópicos ou um pequeno diagrama em texto.
-
----
-
-## 3️⃣ Componentes Utilizados na Simulação
-
-Liste os principais componentes definidos no `diagram.json`, por exemplo:
-
-- Tipo de placa utilizada  
-- LEDs, botões, sensores, atuadores, etc.  
-- Função de cada componente no sistema  
-
----
-
-## 4️⃣ Decisões Técnicas Relevantes
-
-Explique brevemente decisões importantes tomadas durante o desenvolvimento, como:
-
-- Organização do código  
-- Uso de funções, estados ou constantes  
-- Estratégias para temporização ou controle lógico  
-
----
-
-## 5️⃣ Resultados Obtidos
-
-Descreva o comportamento final do sistema:
-
-- O que funciona corretamente  
-- Quais requisitos foram atendidos  
-- Resultado observado na simulação do Wokwi  
-
----
-
-## 6️⃣ Comentários Adicionais (Opcional)
-
-Utilize este espaço para comentar, se desejar:
-
-- Dificuldades encontradas  
-- Limitações da solução  
-- Melhorias que você faria com mais tempo  
-- Principais aprendizados durante o desafio  
-
----
-
-> ✅ Este relatório faz parte da avaliação técnica.  
-> Clareza, objetividade e organização são tão importantes quanto o funcionamento do código.
-
----
-
-## 🆘 Suporte
-
-Em caso de dúvidas:
-
-- Consulte o material dos cursos EAD
-- Leia atentamente este README
-- Analise os logs das GitHub Actions
-- Utilize os canais oficiais para contato com os instrutores
-
-Boa sorte no processo seletivo.
-Mostre sua capacidade de pensar como um engenheiro de sistemas embarcados.
-****
+## 🔍 Link para o repositório original do desafio
+[Repositório base PNAT](https://github.com/pnaat/processoseletivoIoT)
