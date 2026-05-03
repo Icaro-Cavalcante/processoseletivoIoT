@@ -102,6 +102,8 @@ def loop_principal():
 
 setup()
 
+print("Teste")
+
 while True:
     loop_principal()
     # Sleep mínimo apenas para estabilidade do simulador (não afeta a lógica)
