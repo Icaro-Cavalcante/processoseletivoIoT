@@ -36,30 +36,72 @@
     {
       "type": "wokwi-resistor",
       "id": "r_red",
-      "top": 25,
-      "left": -260,
+      "top": 51.95,
+      "left": -345.6,
       "attrs": { "value": "220" }
     },
     {
       "type": "wokwi-resistor",
       "id": "r_yellow",
-      "top": 75,
-      "left": -260,
+      "top": 90.35,
+      "left": -345.6,
       "attrs": { "value": "220" }
     },
     {
       "type": "wokwi-resistor",
       "id": "r_green",
-      "top": 125,
-      "left": -260,
+      "top": 128.75,
+      "left": -345.6,
       "attrs": { "value": "220" }
     },
     {
       "type": "wokwi-resistor",
       "id": "r_ped",
-      "top": 125,
-      "left": -170,
+      "top": 167.15,
+      "left": -345.6,
       "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text1",
+      "top": 201.6,
+      "left": -259.2,
+      "attrs": { "text": "Travessia" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text2",
+      "top": 134.4,
+      "left": -249.6,
+      "attrs": { "text": "Verde" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text3",
+      "top": 76.8,
+      "left": -259.2,
+      "attrs": { "text": "Amarelo\n" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text4",
+      "top": 28.8,
+      "left": -259.2,
+      "attrs": { "text": "Vermelho\n\n" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text5",
+      "top": 249.6,
+      "left": -268.8,
+      "attrs": { "text": "Botão para\nsolicitar\ntravessia" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text6",
+      "top": 105.6,
+      "left": -432,
+      "attrs": { "text": "Resistores" }
     }
   ],
   "connections": [
@@ -75,7 +117,7 @@
     [ "led_yellow:C", "r_yellow:2", "black", [ "v-15", "h-80" ] ],
     [ "led_green:C", "r_green:2", "black", [ "v-15", "h-80" ] ],
     [ "led_ped:C", "r_ped:2", "black", [ "v19.2", "h52.4" ] ],
-    [ "r_red:1", "esp:GND.1", "black", [ "v199.75", "h163.85" ] ],
+    [ "r_red:1", "esp:GND.1", "black", [ "v182.4", "h249.45" ] ],
     [ "r_yellow:1", "esp:GND.1", "black", [ "v226.55", "h163.85" ] ],
     [ "r_green:1", "esp:GND.1", "black", [ "v195.75", "h163.85" ] ],
     [ "r_ped:1", "esp:GND.1", "black", [ "v13.35", "h73.85" ] ]
